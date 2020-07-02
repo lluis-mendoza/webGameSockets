@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="stylesheet" href="style.css" />
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+		<title>App</title>
+	</head>
+	<body>
+		<div id="gameArea">
+			<!--Here we use the templates -->
+		</div>
+		<script id="intro-template" type="text/template">
+			<div class="titlePage">
+				<div class="title">Title</div>
+				<div class="input">
+					<label for="inputPlayerName">Nickname:</label>
+					<input id="inputPlayerName" type="text"/>
+				</div>
+				<div class="buttons">
+					<button id="btnJoinGame" class="btn">JOIN</button>	
+					<button id="btnCreateGame" class="btn">CREATE</button>
+				</div>
+			</div>
+		</script>
+		<script id="join-game-template" type="text/template">
+			<div class="joinGamePage">
+				<div class="input">
+					<label for="inputRoom">Game ID: </label>
+					<input id="inputRoom" type="text"/>
+				</div>
+				<div class="buttons">
+					<button id="btnRoomGame" class="btn">Ok</button>
+				</div>
+			</div>
+		</script>
+		<script id="game-room-host-template" type="text/template">
+			<div class="createGamePage">
+				<div id="gameId">Game ID: </div>
+				<div id="newGameCode">Error!</div>
+				<div id="playersWaiting"></div>
+				<button id="btnStartGame" class="btn">Start Game</button>
+			</div>
+		</script>
+		<script id="game-room-client-template" type="text/template">
+			<div class="createGamePage">
+				<div>Game ID: </div>
+				<div id="newGameCode">Error!</div>
+				<div id="playersWaiting"></div>
+			</div>
+		</script>
+		<script id="game-questions-template" type="text/template">
+			<div class="game">
+				<div class="input">
+					<label for="inputQuestion">Ask a question: </label>
+					<input id="inputQuestion" type="text"/>
+				</div>
+				<button id="btnSendQuestion" class="btn">Send</button>
+			</div>
+		</script>
+		<script id="game-answers-template" type="text/template">
+			<div class="game">
+				<div id="question">Waiting for a question</div>
+				<div id="players"></div>
+			</div>
+		</script>
+		<script id="game-see-answers-template" type="text/template">
+			<div class="game">
+				<div id="question">Waiting for a question</div>
+				<div id="answers"></div>
+			</div>
+		</script>
+		<script src="script.js"></script>
+	</body>
+</html>
+

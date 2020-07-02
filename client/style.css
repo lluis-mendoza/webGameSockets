@@ -1,0 +1,102 @@
+:root{
+
+}
+
+*{
+	box-sizing: border-box;
+}
+
+body{
+	background-color: #1e2732;
+	font-family: 'Open Sans', sans-serif;
+	display:flex;
+	color: #fff;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	margin: 0;	
+}
+.container{
+	background-color: #fff;
+	border-radius: 5px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+	width: 400px;
+}
+.form {
+	padding: 30px 40px;
+}
+.form h2{
+	text-align:center;
+	margin: 0 0 20px;
+}
+.form label{
+	color: #777;
+	display: block;
+	margin-top: 5px;
+}
+.input input{
+	border: 2px solid #f0f0f0;
+	display: block;
+	width: 100%;
+	font-size: 2em;
+	padding: 10px;
+	text-align:center;
+}
+.input label{
+	color: #fff;
+	font-size: 2em;
+	text-align: center;
+	display:block;
+	padding: 10px;
+}
+.title{
+	color: #fff;
+	font-size: 4em;
+	text-align:center;
+	display:block;
+}
+.btn{
+	background-color: #0cc7db;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	margin-top: 10px;
+	color: #fff;
+	text-align: center;
+	font-size: 2em;
+	padding: 10px;
+	border: 1px solid transparent;
+
+}
+#question{
+	font-size: 3em;
+	text-align: center;
+}
+#players button{
+	text-align: center;
+	font-size: 2em;
+	padding: 10px;
+	background-color: inherit;
+	border: 2px solid #0cc7db;
+	color: #0cc7db;
+	margin-top: 20px;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+}
+#gameId{
+	font-size: 2em;
+	display: block;
+}
+#newGameCode{
+	font-size: 5em;
+	display:block;
+}
+#playersWaiting{
+	font-size: 2em;
+	text-align: center;
+}
+#answers{
+	font-size: 2em;
+	text-align: center;
+}
