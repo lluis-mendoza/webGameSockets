@@ -14,7 +14,6 @@ class Games{
 	}
 	removePlayerToGame(gameId, playerId){
 		var game = this.games.find((game) => game.gameId === gameId);
-		console.log(game);
 		var players = game.players.filter((player) => player.playerId !== playerId);
 		this.games.find((game) => game.gameId === gameId).players = players;	
 	}
