@@ -30,7 +30,6 @@ io.on('connection', (sock) => {
 	})
 	sock.on('hostCreateNewGame', ()=>{
 		var _gameId = ((Math.random()*100000) | 0).toString();
-		console.log(_gameId);
 		players.setGameId(sock.id, _gameId);
 		games.addGame(_gameId, players.getPlayer(sock.id));
 		sock.emit('newGameCreatedByHost', {gameId: _gameId, nickname: players.getPlayer(sock.id).nickname});
@@ -61,15 +60,11 @@ io.on('connection', (sock) => {
 	});
 	sock.on('sendAnswer', (data) =>{
 		var gameId = players.getPlayer(data.player).gameId;
-		console.log(games.getGame(gameId).answers);
-		console.log(data.player);
 		if (games.getGame(gameId).answers.find((answer) => answer.player == data.player) === undefined){
 			games.getGame(gameId).answers.push(data);
 			var game = games.getGame(gameId);
-			console.log(game.host);
 			io.sockets.to(game.host.playerId).emit('addAnswer', {player: players.getPlayer(data.player).nickname, answer: players.getPlayer(data.answer).nickname});
 			if (game.answers.length >= game.players.length-1){ 
-				console.log("The game finished!");
 				var host = game.host;
 				var answersSet = (new Set(game.answers.map(a => a.answer)));
 				if (answersSet.size === 2){
@@ -78,19 +73,23 @@ io.on('connection', (sock) => {
 					var num1 = game.answers.filter(x => x.answer == val1).length;
 					var num2 = game.answers.filter(x => x.answer == val2).length;
 					var answer;
-					if (num1 > num2){
+					if (num1 > 1 && num2==1){
 						host = players.getPlayer(val2);
 						answer = val2;
 					}
-					else if (num1 < num2){
+					else if (num1==1 && 1 < num2){
 						host = players.getPlayer(val1);
 						answer = val1;
 					}
-					if (num1 != num2)console.log("The player" +players.getPlayer(game.answers.find(x => x.answer == answer).player).nickname +'has achanted');
 
 				}
-				games.getGame(gameId).host = host;
-				io.sockets.in(gameId).emit('setUpGame', sock.id);
+				setTimeout(()=>{
+					games.getGame(gameId).host = host;
+					io.sockets.in(gameId).emit('setUpGame', sock.id);
+					games.getGame(gameId).answers = [];
+				}, 2000);
+
+
 			}
 		}
 
