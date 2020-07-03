@@ -99,7 +99,10 @@ io.on('connection', (sock) => {
 		if (players.existPlayer(sock.id) && players.getPlayer(sock.id).gameId !== undefined){
 			var gameId = players.getPlayer(sock.id).gameId;
 			games.removePlayerToGame(gameId, sock.id);
-			io.sockets.in(gameId).emit('setPlayersInRoom', games.getGame(gameId).players);
+			players.removePlayer(sock.id);
+			sock.leave(gameId);
+			if (games.getGame(gameId).players.length == 0) games.removeGame(gameId);
+			else io.sockets.in(gameId).emit('setPlayersInRoom', games.getGame(gameId).players);
 		}
 	});
 });
