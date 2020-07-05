@@ -52,13 +52,13 @@ io.on('connection', (sock) => {
 	sock.on('startGame', ()=>{
 		if (players.getPlayer(sock.id) === undefined) return;
 		var gameId = players.getPlayer(sock.id).gameId;
-		io.sockets.in(gameId).emit('setUpGame', sock.id);
+		io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host);
 	});
 	sock.on('sendQuestion', (_question) =>{
 		if (players.getPlayer(sock.id) === undefined) return;
 		var gameId = players.getPlayer(sock.id).gameId;
 		sock.emit('seeAnswers', _question);
-		io.sockets.in(gameId).emit('receiveQuestions', {players: games.getGame(gameId).players, hostId: sock.id, question: _question});
+		io.sockets.in(gameId).emit('receiveQuestions', {players: games.getGame(gameId).players, host: games.getGame(gameId).host, question: _question});
 	});
 	sock.on('sendAnswer', (data) =>{
 		if (players.getPlayer(data.player) === undefined) return;
@@ -85,7 +85,7 @@ io.on('connection', (sock) => {
 				}
 				setTimeout(()=>{
 					games.getGame(gameId).host = host;
-					io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host.playerId);
+					io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host);
 					games.getGame(gameId).answers = [];
 				}, 4000);
 

@@ -45,18 +45,21 @@ $(document).ready(function(){
 		$('#newGameCode').text(gameId);
 	});
 	
-	socket.on('setUpGame', (hostId) =>{
+	socket.on('setUpGame', (host) =>{
 		$('#players :input').attr('disabled', false);	
-		if (socket.id === hostId){
+		if (socket.id == host.playerId){
 			$('#gameArea').html($('#game-questions-template').html());
 		}
 		else{
 			$('#gameArea').html($('#game-answers-template').html());	
+			$('#playerAsking').text("It's the turn of "+ host.nickname);
 		}
 	});
 	socket.on('receiveQuestions', (data) =>{
+		$('#playerAsking').text(data.host.nickname+" asks: ");
 		$('#question').text(data.question);
-		data.players.filter((player) => player.playerId !== data.hostId).forEach(player => $('<button id="btnAnswerQuestion" value='+player.playerId+' >'+ player.nickname + '</button>').appendTo('#players'));
+		console.log(data.host.playerId);
+		data.players.filter((player) => player.playerId != data.host.playerId).forEach(player => $('<button id="btnAnswerQuestion" value='+player.playerId+' >'+ player.nickname + '</button>').appendTo('#players'));
 		$('#players button').addClass('activeBtn');
 	});
 	socket.on('seeAnswers', (question) =>{
