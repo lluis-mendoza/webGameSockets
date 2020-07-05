@@ -50,15 +50,18 @@ io.on('connection', (sock) => {
 		}
 	});
 	sock.on('startGame', ()=>{
+		if (players.getPlayer(sock.id) === undefined) return;
 		var gameId = players.getPlayer(sock.id).gameId;
 		io.sockets.in(gameId).emit('setUpGame', sock.id);
 	});
 	sock.on('sendQuestion', (_question) =>{
+		if (players.getPlayer(sock.id) === undefined) return;
 		var gameId = players.getPlayer(sock.id).gameId;
 		sock.emit('seeAnswers', _question);
 		io.sockets.in(gameId).emit('receiveQuestions', {players: games.getGame(gameId).players, hostId: sock.id, question: _question});
 	});
 	sock.on('sendAnswer', (data) =>{
+		if (players.getPlayer(data.player) === undefined) return;
 		var gameId = players.getPlayer(data.player).gameId;
 		if (games.getGame(gameId).answers.find((answer) => answer.player == data.player) === undefined){
 			games.getGame(gameId).answers.push(data);
@@ -84,7 +87,7 @@ io.on('connection', (sock) => {
 					games.getGame(gameId).host = host;
 					io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host.playerId);
 					games.getGame(gameId).answers = [];
-				}, 2000);
+				}, 4000);
 
 
 			}

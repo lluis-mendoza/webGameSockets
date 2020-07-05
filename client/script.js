@@ -23,6 +23,9 @@ $(document).ready(function(){
 		socket.emit('sendQuestion', $('#inputQuestion').val());
 	});
 	$(document).on('click', '#btnAnswerQuestion', function(){
+		$('#players button').not(this).removeClass('activeBtn');
+		$('#players button').not(this).addClass('inactiveBtn');
+		$('#players :input').attr('disabled', true);	
 		socket.emit('sendAnswer', {player: socket.id, answer: $(this).val()});
 	});
 	socket.on('newGameCreatedByHost', (data)=>{
@@ -43,6 +46,7 @@ $(document).ready(function(){
 	});
 	
 	socket.on('setUpGame', (hostId) =>{
+		$('#players :input').attr('disabled', false);	
 		if (socket.id === hostId){
 			$('#gameArea').html($('#game-questions-template').html());
 		}
@@ -53,6 +57,7 @@ $(document).ready(function(){
 	socket.on('receiveQuestions', (data) =>{
 		$('#question').text(data.question);
 		data.players.filter((player) => player.playerId !== data.hostId).forEach(player => $('<button id="btnAnswerQuestion" value='+player.playerId+' >'+ player.nickname + '</button>').appendTo('#players'));
+		$('#players button').addClass('activeBtn');
 	});
 	socket.on('seeAnswers', (question) =>{
 		$('#gameArea').html($('#game-see-answers-template').html());
