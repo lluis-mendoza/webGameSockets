@@ -67,25 +67,22 @@ io.on('connection', (sock) => {
 			if (game.answers.length >= game.players.length-1){ 
 				var host = game.host;
 				var answersSet = (new Set(game.answers.map(a => a.answer)));
-				if (answersSet.size === 2){
+				if (answersSet.size == 2){
 					var val1 = Array.from(answersSet)[0];
 					var val2 = Array.from(answersSet)[1]; 
 					var num1 = game.answers.filter(x => x.answer == val1).length;
 					var num2 = game.answers.filter(x => x.answer == val2).length;
-					var answer;
 					if (num1 > 1 && num2==1){
-						host = players.getPlayer(val2);
-						answer = val2;
+						host = players.getPlayer(game.answers.find((answer) => answer.answer == val2).player);
 					}
 					else if (num1==1 && 1 < num2){
-						host = players.getPlayer(val1);
-						answer = val1;
+						host = players.getPlayer(game.answers.find((answer) => answer.answer == val1).player);
 					}
 
 				}
 				setTimeout(()=>{
 					games.getGame(gameId).host = host;
-					io.sockets.in(gameId).emit('setUpGame', sock.id);
+					io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host.playerId);
 					games.getGame(gameId).answers = [];
 				}, 2000);
 
