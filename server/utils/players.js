@@ -17,7 +17,7 @@ class Players{
 		return this.players.find((player) => player.playerId === playerId);
 	}
 	setGameId(playerId, gameId){
-		this.players.find((player) => player.playerId === playerId).gameId = gameId;
+		if (this.existPlayer(playerId)) this.players.find((player) => player.playerId === playerId).gameId = gameId;
 	}
 	existPlayer(playerId){
 		return (this.players.find((player) => player.playerId === playerId) !== undefined);

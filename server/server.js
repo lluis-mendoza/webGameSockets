@@ -37,12 +37,14 @@ io.on('connection', (sock) => {
 	});
 	sock.on('playerJoinGame', (data) =>{
 		if (games.existGame(data.gameId)){
-			games.addPlayerToGame(data.gameId, players.getPlayer(data.playerId));
-			players.setGameId(sock.id, data.gameId);
-			io.sockets.in(data.gameId).emit('setPlayerInRoom', players.getPlayer(data.playerId).nickname);
-			sock.join(data.gameId);
-			sock.emit('playerJoinGameSuccess', data.gameId);
-			sock.emit('setPlayersInRoom', games.getGame(data.gameId).players);
+			if (games.getGame(data.gameId).players.find((player) => player.playerId == data.playerId) === undefined){
+				games.addPlayerToGame(data.gameId, players.getPlayer(data.playerId));
+				players.setGameId(sock.id, data.gameId);
+				io.sockets.in(data.gameId).emit('setPlayerInRoom', players.getPlayer(data.playerId).nickname);
+				sock.join(data.gameId);
+				sock.emit('playerJoinGameSuccess', data.gameId);
+				sock.emit('setPlayersInRoom', games.getGame(data.gameId).players);
+			}
 		}
 		else{
 			console.log("The game dont exist");
@@ -61,7 +63,7 @@ io.on('connection', (sock) => {
 		io.sockets.in(gameId).emit('receiveQuestions', {players: games.getGame(gameId).players, host: games.getGame(gameId).host, question: _question});
 	});
 	sock.on('sendAnswer', (data) =>{
-		if (players.getPlayer(data.player) === undefined) return;
+		if (!players.existPlayer(data.player) || !players.existPlayer(data.answer) || !games.existGame(players.getPlayer(data.player).gameId)) return;
 		var gameId = players.getPlayer(data.player).gameId;
 		if (games.getGame(gameId).answers.find((answer) => answer.player == data.player) === undefined){
 			games.getGame(gameId).answers.push(data);
@@ -84,9 +86,11 @@ io.on('connection', (sock) => {
 
 				}
 				setTimeout(()=>{
-					games.getGame(gameId).host = host;
-					io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host);
-					games.getGame(gameId).answers = [];
+					if (games.existGame(gameId)){
+						games.getGame(gameId).host = host;
+						io.sockets.in(gameId).emit('setUpGame', games.getGame(gameId).host);
+						games.getGame(gameId).answers = [];
+					}
 				}, 4000);
 
 

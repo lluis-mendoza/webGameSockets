@@ -4,29 +4,44 @@ $(document).ready(function(){
 	$('#gameArea').html( $('#intro-template').html());
 	
 	$(document).on('click', '#btnCreateGame', function(){
-		socket.emit('addPlayer', $('#inputPlayerName').val());
-		$('#gameArea').html($('#game-room-host-template').html());
-		socket.emit('hostCreateNewGame');
-	})
+		$('#btnCreateGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
+			socket.emit('addPlayer', $('#inputPlayerName').val());
+			$('#gameArea').html($('#game-room-host-template').html());
+			socket.emit('hostCreateNewGame');
+		});
+	});
 	$(document).on('click','#btnJoinGame', function(){
-		socket.emit('addPlayer', $('#inputPlayerName').val());
-		$('#gameArea').html($('#join-game-template').html());
+		$('#btnJoinGame').prop('disabled', true);
+		$('#btnJoinGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
+			socket.emit('addPlayer', $('#inputPlayerName').val());
+			$('#gameArea').html($('#join-game-template').html());
+		});
 	});
 	$(document).on('click','#btnRoomGame', function(){
-		var roomCode = $('#inputRoom').val();
-		socket.emit('playerJoinGame', {playerId: socket.id, gameId: $('#inputRoom').val()});
+		$('#btnRoomGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
+			var roomCode = $('#inputRoom').val();
+			socket.emit('playerJoinGame', {playerId: socket.id, gameId: $('#inputRoom').val()});
+		});
 	});
 	$(document).on('click', '#btnStartGame', function(){
-		socket.emit('startGame');
+		$('#btnStartGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
+			socket.emit('startGame');
+		});
 	});
 	$(document).on('click', '#btnSendQuestion', function(){
-		socket.emit('sendQuestion', $('#inputQuestion').val());
+		$('#btnSendQuestion').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
+			socket.emit('sendQuestion', $('#inputQuestion').val());
+		});
 	});
 	$(document).on('click', '#btnAnswerQuestion', function(){
-		$('#players button').not(this).removeClass('activeBtn');
-		$('#players button').not(this).addClass('inactiveBtn');
-		$('#players :input').attr('disabled', true);	
-		socket.emit('sendAnswer', {player: socket.id, answer: $(this).val()});
+		var button = $(this);
+		$('#players').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
+			console.log("REspuesta enviada");
+			button.addClass('activeBtn');
+			$('#players button').not(button).addClass('inactiveBtn');
+			$('#players :input').attr('disabled', true);	
+			socket.emit('sendAnswer', {player: socket.id, answer:button.val()});
+		});
 	});
 	socket.on('newGameCreatedByHost', (data)=>{
 		$('#newGameCode').text(data.gameId);
@@ -58,15 +73,15 @@ $(document).ready(function(){
 	socket.on('receiveQuestions', (data) =>{
 		$('#playerAsking').text(data.host.nickname+" asks: ");
 		$('#question').text(data.question);
-		console.log(data.host.playerId);
-		data.players.filter((player) => player.playerId != data.host.playerId).forEach(player => $('<button id="btnAnswerQuestion" value='+player.playerId+' >'+ player.nickname + '</button>').appendTo('#players'));
-		$('#players button').addClass('activeBtn');
+		$('#players').empty();
+		data.players.filter((player) => player.playerId != data.host.playerId).forEach(player => $('#players').append( "<button id='btnAnswerQuestion' class='btnAnswer' value="+player.playerId.toString()+" >"+ player.nickname.toString() + "</button>"));
 	});
 	socket.on('seeAnswers', (question) =>{
 		$('#gameArea').html($('#game-see-answers-template').html());
 		$('question').text(question);
 	});
 	socket.on('addAnswer', (data) =>{
+		//if ($('#no-answers').length) $('#answers').empty();
 		$('<p>'+data.player+' says '+data.answer+'</p>').appendTo('#answers');
 	});
 	

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="style.css" />
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -17,61 +17,63 @@
 			<div class="titlePage">
 				<div class="title">Title</div>
 				<div class="input">
-					<label for="inputPlayerName">Nickname:</label>
-					<input id="inputPlayerName" type="text"/>
+					<input id="inputPlayerName" type="text" placeholder="Nombre"/>
 				</div>
 				<div class="buttons">
-					<button id="btnJoinGame" class="btn">JOIN</button>	
-					<button id="btnCreateGame" class="btn">CREATE</button>
+					<button id="btnJoinGame" class="button" >Unirse</button>
+					<button id="btnCreateGame" class="button">Crear</button>
 				</div>
 			</div>
 		</script>
 		<script id="join-game-template" type="text/template">
 			<div class="joinGamePage">
 				<div class="input">
-					<label for="inputRoom">Game ID: </label>
-					<input id="inputRoom" type="text"/>
+					<input id="inputRoom" type="text" placeholder="Código"/>
 				</div>
-				<div class="buttons">
-					<button id="btnRoomGame" class="btn">Ok</button>
-				</div>
+				<button id="btnRoomGame" class="button">Entrar</button>
 			</div>
 		</script>
 		<script id="game-room-host-template" type="text/template">
 			<div class="createGamePage">
-				<div id="gameId">Game ID: </div>
-				<div id="newGameCode">Error!</div>
-				<div id="playersWaiting"></div>
-				<button id="btnStartGame" class="btn">Start Game</button>
+				<div class="text" id="gameId">Código: </div>
+				<div class="text" id="newGameCode">Error!</div>
+				<div class="text" id="playersWaiting"></div>
+				<button id="btnStartGame" class="button">Empezar</button>
 			</div>
 		</script>
 		<script id="game-room-client-template" type="text/template">
 			<div class="createGamePage">
-				<div>Game ID: </div>
-				<div id="newGameCode">Error!</div>
-				<div id="playersWaiting"></div>
+				<div class="text" id="gameId">Código: </div>
+				<div class="text" id="newGameCode">Error!</div>
+				<div class="text" id="playersWaiting"></div>
 			</div>
 		</script>
 		<script id="game-questions-template" type="text/template">
 			<div class="game">
 				<div class="input">
-					<label for="inputQuestion">Ask a question: </label>
+					<label for="inputQuestion">Escribe una pregunta: </label>
 					<input id="inputQuestion" type="text"/>
 				</div>
-				<button id="btnSendQuestion" class="btn">Send</button>
+				<button id="btnSendQuestion" class="button">Enviar</button>
 			</div>
 		</script>
 		<script id="game-answers-template" type="text/template">
 			<div class="game">
 				<div class="text" id="playerAsking"></div>
-				<div class="text" id="question">Waiting for a question</div>
-				<div id="players"></div>
+				<div class="text" id="question">Esperando a la pregunta</div>
+				<div id="players">
+					<div id="loader" class="loader"></div>
+				</div>
 			</div>
 		</script>
 		<script id="game-see-answers-template" type="text/template">
 			<div class="game">
-				<div class="text" id="question">Waiting for a question</div>
+				<div class="text" id="question">Esperando a la pregunta</div>
 				<div class="text" id="answers"></div>
+				<div class="no-answers">
+					<div class="text">Esperando a las respuestas</div>
+					<div class="loader"></div>
+				</div>
 			</div>
 		</script>
 		<script src="script.js"></script>
