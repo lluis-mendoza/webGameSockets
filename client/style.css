@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;900&display=swap');
 :root{
 
 }
@@ -8,7 +9,7 @@
 
 body{
 	background-color: #1e2732;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Nunito', sans-serif;
 	display:flex;
 	color: #fff;
 	align-items: center;
@@ -56,6 +57,7 @@ body{
 	color: #fff;
 	font-size: 4em;
 	text-align:center;
+	font-weight: bold;
 	display:block;
 }
 

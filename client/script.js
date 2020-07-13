@@ -5,22 +5,25 @@ $(document).ready(function(){
 	
 	$(document).on('click', '#btnCreateGame', function(){
 		$('#btnCreateGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
-			socket.emit('addPlayer', $('#inputPlayerName').val());
+			var _nickname = $('#inputPlayerName').val();
+			localStorage.setItem('nickname', _nickname);
 			$('#gameArea').html($('#game-room-host-template').html());
-			socket.emit('hostCreateNewGame');
+			socket.emit('createGame', {nickname: _nickname});
 		});
 	});
 	$(document).on('click','#btnJoinGame', function(){
 		$('#btnJoinGame').prop('disabled', true);
 		$('#btnJoinGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
-			socket.emit('addPlayer', $('#inputPlayerName').val());
+			localStorage.setItem('nickname', $('#inputPlayerName').val());
 			$('#gameArea').html($('#join-game-template').html());
 		});
 	});
 	$(document).on('click','#btnRoomGame', function(){
 		$('#btnRoomGame').on("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(event) {
-			var roomCode = $('#inputRoom').val();
-			socket.emit('playerJoinGame', {playerId: socket.id, gameId: $('#inputRoom').val()});
+			var _gameId = $('#inputRoom').val();
+			var _nickname = localStorage.getItem('nickname');
+			socket.emit('joinGame',{nickname: _nickname, gameId: _gameId} );
+			//socket.emit('playerJoinGame', {playerId: socket.id, gameId: $('#inputRoom').val()});
 		});
 	});
 	$(document).on('click', '#btnStartGame', function(){
@@ -43,9 +46,10 @@ $(document).ready(function(){
 			socket.emit('sendAnswer', {player: socket.id, answer:button.val()});
 		});
 	});
-	socket.on('newGameCreatedByHost', (data)=>{
+	socket.on('newGameCreated', (data)=>{
 		$('#newGameCode').text(data.gameId);
-		$('<p>'+data.nickname+'</p>').appendTo('#playersWaiting');
+		var _nickname = localStorage.getItem('nickname');
+		$('<p>'+_nickname+'</p>').appendTo('#playersWaiting');
 	});
 	socket.on('setPlayerInRoom', (nickname) =>{
 		console.log("The player "+ nickname+" joined the game!");

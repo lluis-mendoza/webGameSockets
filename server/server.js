@@ -1,28 +1,89 @@
-const http = require('http');
-const express = require('express');
-const socketio = require('socket.io');
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var mongoose = require('mongoose');
+var Game = require('./models/game')
+var port = process.env.PORT || 3000;
 
 
-const {Players} = require('./utils/players');
-const {Games} = require('./utils/games');
+var uri = "mongodb://localhost:27017/myGameDB"
 
-const app = express();
-const server = http.createServer(app);
-
-var PORT = 3000;
+mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true});
+var db  = mongoose.connection;
+db.on('connected', function(){
+	console.log("MongoDB database connection established successfully!");
+});
+db.on('disconnected', function(){
+	console.log("MongoDB database disconnection successfully!")
+});
+db.on('error', function(){
+	console.log("MongoDB database error");
+});
 
 const clientPath = `${__dirname}/../client`;
-console.log(`Serving static from ${clientPath}`);
 app.use(express.static(clientPath));
 
 app.get('/', function(req, res){
 	res.sendFile(clientPath+'/index.html');
 });
 
-var players = new Players();
-var games = new Games();
+io.on('connection', (sock) =>{
+	console.log("New client: "+sock.id);
+	sock.on('joinGame', (data) =>{
+		var player = {playerId: sock.id, nickname: data.nickname};
+		Game.findOneAndUpdate({gameId: data.gameId}, {$addToSet:{players: player}}, {new: true}, function(err, game){
+			if (err) console.log(err);
+			console.log(game);
+		});
+	});
+	sock.on('createGame', (data)=>{
+		var game = new Game();
+		var _gameId = ((Math.random()*100000) | 0).toString();
+		game.gameId = _gameId;
+		game.state = "WaitingForPlayers";
+		var player = {playerId: sock.id, nickname: data.nickname};
+		game.players.addToSet(player);
+		Game.findOne({gameId: _gameId}, function(err, games){
+			if (err) console.log(err);
+			else if (games) console.log("The gameId already exist");
+			else{
+				game.save(function(err){
+					if (err) console.log(err);
+					else{
+						console.log("Game created");
+						sock.emit('newGameCreated', {gameId: _gameId});
+						sock.join(_gameId);
+					}
+				});
 
-const io = socketio(server);
+			}
+		});
+	});
+	sock.on('disconnect', function(){
+		console.log("The user "+sock.id+" has been desconected!");
+		Game.findOne({players:{$elemMatch:{playerId: sock.id}}}, function(err, games){
+			if (err) console.log(err);
+			else if (games){
+				if (games.players.length > 1){
+					Game.updateOne({players:{$elemMatch:{playerId: sock.id}}}, {$pull:{players:{playerId: sock.id}}}, {safe: true, multi: true}, function(err, games){
+                        			if (err) console.log(err);
+                       				console.log(games);
+                			});
+				}
+				else{
+					games.remove(function(err){
+						if (err) console.log(err);
+						else console.log("Deleted the game with code: "+games.gameId);
+					});
+				}
+			}
+		});
+		
+	});
+
+});
+/*
 io.on('connection', (sock) => {
 	console.log("New client: " + sock.id);
 	sock.on('addPlayer', (nickname)=>{
@@ -30,6 +91,7 @@ io.on('connection', (sock) => {
 	})
 	sock.on('hostCreateNewGame', ()=>{
 		var _gameId = ((Math.random()*100000) | 0).toString();
+		if (games.existGame(_gameId)) return;
 		players.setGameId(sock.id, _gameId);
 		games.addGame(_gameId, players.getPlayer(sock.id));
 		sock.emit('newGameCreatedByHost', {gameId: _gameId, nickname: players.getPlayer(sock.id).nickname});
@@ -110,11 +172,11 @@ io.on('connection', (sock) => {
 		}
 	});
 });
-
+*/
 server.on('error', (err) =>{
 	console.error('Server error: ', err);
 });
 
-server.listen(PORT, ()=>{
-	console.log('Server started on ', PORT);
+server.listen(port, ()=>{
+	console.log('Server started on ', port);
 });
